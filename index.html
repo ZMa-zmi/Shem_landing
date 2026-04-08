@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>SHEM | Architectural Monolith</title>
+
+  <!-- Fonts (with Google Fonts fallback) -->
+  <link href="https://fonts.googleapis.com" rel="preconnect"/>
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,800&family=Inter:wght@300;400;500;700;900&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+
+  <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary":                     "#FF8C00",
+            "primary-dim":                 "#e67e00",
+            "on-primary":                  "#ffffff",
+            "on-primary-fixed":            "#403f3f",
+            "primary-container":           "#ffe8d1",
+            "on-primary-fixed-variant":    "#5c5b5b",
+            "tertiary-container":          "#fef2e2",
+            "surface-container-low":       "#fcf9f3",
+            "on-error-container":          "#752121",
+            "on-tertiary":                 "#ffffff",
+            "secondary-dim":               "#595855",
+            "tertiary":                    "#6b6357",
+            "on-primary-container":        "#525151",
+            "error-container":             "#fe8983",
+            "on-surface":                  "#383831",
+            "surface-container-highest":   "#eae8de",
+            "surface-container-lowest":    "#ffffff",
+            "secondary-container":         "#e5e2dd",
+            "surface-dim":                 "#e4e3d7",
+            "tertiary-fixed":              "#fef2e2",
+            "primary-fixed-dim":           "#d6d4d3",
+            "secondary":                   "#656461",
+            "on-secondary-container":      "#52524e",
+            "error":                       "#a64542",
+            "outline":                     "#818178",
+            "on-secondary":                "#ffffff",
+            "surface-variant":             "#eae8de",
+            "surface-container-high":      "#f0eee5",
+            "error-dim":                   "#4e0309",
+            "on-tertiary-fixed":           "#50493d",
+            "on-tertiary-fixed-variant":   "#6d6559",
+            "outline-variant":             "#babab0",
+            "inverse-primary":             "#ffffff",
+            "inverse-surface":             "#0e0e0c",
+            "on-secondary-fixed-variant":  "#5c5b58",
+            "background":                  "#fffcf7",
+            "secondary-fixed":             "#e5e2dd",
+            "surface-tint":                "#FF8C00",
+            "surface-bright":              "#fffcf7",
+            "inverse-on-surface":          "#9e9d98",
+            "tertiary-fixed-dim":          "#efe4d4",
+            "tertiary-dim":                "#5f574c",
+            "primary-fixed":               "#e5e2e1",
+            "on-error":                    "#ffffff",
+            "surface-container":           "#f6f4ec",
+            "surface":                     "#fffcf7",
+            "on-surface-variant":          "#65655c",
+            "on-background":               "#383831",
+            "on-secondary-fixed":          "#403f3c",
+            "secondary-fixed-dim":         "#d7d4cf",
+            "on-tertiary-container":       "#625b4f"
+          },
+          borderRadius: {
+            "DEFAULT": "0px",
+            "lg":      "0px",
+            "xl":      "0px",
+            "full":    "9999px"
+          },
+          fontFamily: {
+            "headline": ["Plus Jakarta Sans", "sans-serif"],
+            "body":     ["Plus Jakarta Sans", "sans-serif"],
+            "label":    ["Plus Jakarta Sans", "sans-serif"],
+            "display":  ["Inter", "sans-serif"]
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* ── Base ── */
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    .inter-black { font-family: 'Inter', sans-serif; font-weight: 900; }
+    .plus-jakarta { font-family: 'Plus Jakarta Sans', sans-serif; }
+
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    .material-symbols-filled {
+      font-family: 'Material Symbols Outlined';
+      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48;
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: #fffcf7; }
+    ::-webkit-scrollbar-thumb { background: #FF8C00; }
+
+    /* ── Glass Nav ── */
+    .glass-nav {
+      background: rgba(255, 252, 247, 0.70);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+
+    /* ── Hero logo overlay ── */
+    .hero-logo {
+      font-family: 'Inter', sans-serif;
+      font-weight: 900;
+      font-size: clamp(4rem, 12vw, 13rem);
+      line-height: 1;
+      letter-spacing: -0.03em;
+      color: white;
+      text-transform: uppercase;
+    }
+
+    /* ── Reveal animation ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(32px);
+      transition: opacity 0.75s cubic-bezier(.22,1,.36,1), transform 0.75s cubic-bezier(.22,1,.36,1);
+    }
+    .reveal.visible { opacity: 1; transform: none; }
+    .reveal-d1 { transition-delay: 0.10s; }
+    .reveal-d2 { transition-delay: 0.22s; }
+    .reveal-d3 { transition-delay: 0.34s; }
+    .reveal-d4 { transition-delay: 0.46s; }
+    .reveal-d5 { transition-delay: 0.58s; }
+
+    /* ── Tab active ── */
+    .tab-btn.active {
+      color: #FF8C00;
+      border-bottom: 4px solid #FF8C00;
+    }
+    .tab-btn {
+      border-bottom: 4px solid transparent;
+      padding-bottom: 1rem;
+      transition: color .25s, border-color .25s;
+    }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── Menu overlay ── */
+    #mobile-menu {
+      transition: opacity .35s ease, visibility .35s ease;
+      opacity: 0;
+      visibility: hidden;
+    }
+    #mobile-menu.open { opacity: 1; visibility: visible; }
+
+    /* ── Progress bar animated ── */
+    .progress-fill {
+      width: 0%;
+      transition: width 1.4s cubic-bezier(.22,1,.36,1);
+    }
+    .progress-fill.animated { width: 65%; }
+
+    /* ── Project card hover ── */
+    .project-card img { transition: transform 0.7s cubic-bezier(.22,1,.36,1); }
+    .project-card:hover img { transform: scale(1.06); }
+    .project-card .overlay { transition: background-color 0.5s ease; }
+    .project-card:hover .overlay { background-color: rgba(255,140,0,0.28); }
+
+    /* ── Button hover lift ── */
+    .btn-primary {
+      background: linear-gradient(135deg, #FF8C00 0%, #e67e00 100%);
+      transition: transform .2s cubic-bezier(.22,1,.36,1), background .2s;
+    }
+    .btn-primary:hover { transform: translateY(-3px); background: linear-gradient(135deg, #e67e00 0%, #cc7000 100%); }
+
+    /* ── Advantages icon ── */
+    .adv-icon { font-size: 3rem; line-height: 1; }
+
+    /* ── Mobile menu items ── */
+    .menu-link {
+      font-family: 'Inter', sans-serif;
+      font-weight: 900;
+      font-size: clamp(2.5rem, 8vw, 5rem);
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      text-transform: uppercase;
+      color: #383831;
+      display: block;
+      transition: color .2s;
+    }
+    .menu-link:hover { color: #FF8C00; }
+
+    /* ── Service list item ── */
+    .service-item { cursor: pointer; }
+    .service-item:hover .service-num { color: #e67e00; }
+    .service-item .service-num { transition: color .2s; }
+  </style>
+</head>
+
+<body class="bg-background text-on-surface font-body selection:bg-primary-container selection:text-on-primary-container overflow-x-hidden">
+
+  <!-- ════════════════════ NAVIGATION ════════════════════ -->
+  <header id="site-header" class="fixed top-0 left-0 w-full z-50 transition-all duration-300">
+    <!-- Transparent at top, glass on scroll -->
+    <div id="nav-inner" class="px-6 md:px-10 py-5 flex justify-between items-center transition-all duration-300">
+
+      <!-- Logo -->
+      <a href="#" class="inter-black text-2xl tracking-tighter uppercase text-white z-10 transition-colors duration-300" id="nav-logo">SHEM.</a>
+
+      <!-- Desktop Nav Links -->
+      <nav class="hidden md:flex items-center space-x-10">
+        <a href="#about"     class="nav-link text-[11px] font-extrabold tracking-[0.22em] uppercase text-white hover:text-primary transition-colors">Studio</a>
+        <a href="#services"  class="nav-link text-[11px] font-extrabold tracking-[0.22em] uppercase text-white hover:text-primary transition-colors">Services</a>
+        <a href="#portfolio" class="nav-link text-[11px] font-extrabold tracking-[0.22em] uppercase text-white hover:text-primary transition-colors">Works</a>
+        <a href="#contact"   class="nav-link text-[11px] font-extrabold tracking-[0.22em] uppercase text-white hover:text-primary transition-colors">Contact</a>
+      </nav>
+
+      <!-- CTA + Burger -->
+      <div class="flex items-center space-x-6">
+        <a href="#contact" class="hidden md:inline-flex btn-primary text-on-primary px-7 py-3 text-[10px] font-black tracking-[0.28em] uppercase items-center space-x-2">
+          <span>Consult</span>
+          <span class="material-symbols-outlined text-sm">arrow_right_alt</span>
+        </a>
+        <!-- Burger (mobile) -->
+        <button id="burger-btn" class="flex flex-col justify-center space-y-1.5 p-1 z-50" aria-label="Toggle menu">
+          <span class="burger-line block h-[2px] w-7 bg-white transition-all duration-300"></span>
+          <span class="burger-line block h-[2px] w-5 bg-white transition-all duration-300"></span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ════════════════════ MOBILE MENU ════════════════════ -->
+  <div id="mobile-menu" class="fixed inset-0 z-40 bg-background flex flex-col justify-between px-8 py-28">
+    <nav class="flex flex-col space-y-4">
+      <a href="#about"     class="menu-link" onclick="closeMobileMenu()">Studio</a>
+      <a href="#services"  class="menu-link" onclick="closeMobileMenu()">Services</a>
+      <a href="#portfolio" class="menu-link" onclick="closeMobileMenu()">Works</a>
+      <a href="#contact"   class="menu-link" onclick="closeMobileMenu()">Contact</a>
+    </nav>
+    <div class="border-t border-outline-variant/20 pt-10 space-y-2">
+      <p class="text-[10px] font-black tracking-[0.3em] uppercase text-outline">studio@shem.construction</p>
+      <p class="text-[10px] font-black tracking-[0.3em] uppercase text-outline">Zurich · Dubai · London</p>
+    </div>
+  </div>
+
+  <!-- ════════════════════ HERO ════════════════════ -->
+  <section class="relative h-screen w-full flex items-end justify-start overflow-hidden">
+
+    <!-- Background image -->
+    <div class="absolute inset-0 z-0">
+      <img
+        class="w-full h-full object-cover brightness-75"
+        src="/img/hero.jpg"
+        alt="Brutalist luxury villa with raw concrete walls and glass panels"
+      />
+      <!-- Gradient overlay -->
+      <div class="absolute inset-0 bg-gradient-to-t from-[#1a1a16] via-transparent to-transparent opacity-80"></div>
+      <div class="absolute inset-0 bg-gradient-to-r from-[#1a1a16]/50 via-transparent to-transparent"></div>
+    </div>
+
+    <!-- Logo overlay (large) -->
+    <div class="absolute top-0 left-0 z-10 px-6 md:px-10 pt-5">
+      <!-- Spacer — actual logo in header -->
+    </div>
+
+    <!-- Hero content -->
+    <div class="relative z-10 px-6 md:px-16 lg:px-24 pb-16 md:pb-28 max-w-5xl">
+      <!-- Overline -->
+      <div class="flex items-center space-x-4 mb-6 reveal">
+        <div class="h-[1px] w-10 bg-primary"></div>
+        <span class="text-[10px] font-black tracking-[0.38em] uppercase text-primary">Est. 2012 — Zurich</span>
+      </div>
+      <!-- Headline -->
+      <p class="text-3xl md:text-5xl lg:text-6xl font-extrabold text-white max-w-3xl leading-[1.08] tracking-tight reveal reveal-d1">
+        Defining Contemporary Living through the lens of Architectural Monolithism.
+      </p>
+      <!-- Sub -->
+      <p class="mt-6 text-base md:text-lg text-white/60 font-medium max-w-xl leading-relaxed reveal reveal-d2">
+        We build structures that transcend function — monuments to the intersection of space, light, and material.
+      </p>
+      <!-- CTAs -->
+      <div class="mt-10 flex flex-wrap gap-4 reveal reveal-d3">
+        <a href="#portfolio" class="btn-primary text-on-primary px-8 md:px-12 py-4 md:py-5 text-xs md:text-sm font-black tracking-[0.2em] uppercase flex items-center space-x-3">
+          <span>Explore Our Vision</span>
+          <span class="material-symbols-outlined">arrow_right_alt</span>
+        </a>
+        <a href="#about" class="flex items-center space-x-2 text-white/80 hover:text-primary transition-colors px-2 py-4">
+          <span class="text-xs font-black tracking-[0.2em] uppercase border-b border-white/40 pb-0.5">Our Studio</span>
+          <span class="material-symbols-outlined text-sm">north_east</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Scroll indicator -->
+    <div class="absolute bottom-8 right-8 md:right-12 z-10 flex flex-col items-center space-y-2 opacity-60">
+      <span class="text-[9px] font-black tracking-[0.3em] uppercase text-white" style="writing-mode:vertical-rl; transform:rotate(180deg)">Scroll</span>
+      <div class="h-10 w-[1px] bg-white/50"></div>
+    </div>
+
+  </section>
+
+  <!-- ════════════════════ STATS STRIP ════════════════════ -->
+  <div class="bg-primary px-6 md:px-16 py-5 flex flex-wrap gap-y-3 justify-between items-center">
+    <div class="flex items-center space-x-10 md:space-x-20">
+      <div>
+        <span class="text-2xl md:text-3xl font-black text-on-primary inter-black">142+</span>
+        <span class="block text-[9px] font-black tracking-[0.3em] uppercase text-on-primary/70 mt-0.5">Projects Built</span>
+      </div>
+      <div>
+        <span class="text-2xl md:text-3xl font-black text-on-primary inter-black">12</span>
+        <span class="block text-[9px] font-black tracking-[0.3em] uppercase text-on-primary/70 mt-0.5">Countries</span>
+      </div>
+      <div>
+        <span class="text-2xl md:text-3xl font-black text-on-primary inter-black">98%</span>
+        <span class="block text-[9px] font-black tracking-[0.3em] uppercase text-on-primary/70 mt-0.5">On Schedule</span>
+      </div>
+    </div>
+    <span class="text-[10px] font-black tracking-[0.25em] uppercase text-on-primary/50 hidden md:block">Architecture. Engineering. Excellence.</span>
+  </div>
+
+  <!-- ════════════════════ ABOUT ════════════════════ -->
+  <section id="about" class="py-24 md:py-36 px-6 md:px-16 lg:px-24 bg-surface-container-low grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-16 items-center">
+
+    <!-- Text column -->
+    <div class="md:col-span-5 reveal">
+      <span class="text-[10px] font-black tracking-[0.35em] text-primary uppercase block mb-6">The Philosophy</span>
+      <h2 class="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-8 leading-[1.05] tracking-tight">
+        Space is the final material of construction.
+      </h2>
+      <p class="text-base md:text-lg leading-relaxed text-on-surface-variant font-medium mb-8">
+        SHEM treats every canvas as a physical site where light and mass interact. We move away from the ordinary, embracing asymmetric equilibrium and intentional voids that breathe life into concrete and glass.
+      </p>
+      <p class="text-base leading-relaxed text-on-surface-variant font-medium mb-10">
+        From site analysis to structural finishing, our process is singular: precision, purpose, permanence.
+      </p>
+      <div class="flex items-center space-x-4">
+        <div class="h-[2px] w-10 bg-primary"></div>
+        <span class="font-extrabold text-lg uppercase tracking-tighter">Founded 2012</span>
+      </div>
+    </div>
+
+    <!-- Image column -->
+    <div class="md:col-span-7 reveal reveal-d2">
+      <div class="aspect-[4/5] relative overflow-hidden" style="box-shadow: 0px 24px 48px rgba(56,56,49,0.08);">
+        <img
+          class="w-full h-full object-cover"
+          src="/img/about.jpg"
+          alt="Minimalist concrete staircase interior"
+        />
+        <!-- Small caption card -->
+        <div class="absolute bottom-0 right-0 bg-surface-container-lowest p-5 md:p-8 max-w-[220px]">
+          <span class="text-[9px] font-black tracking-[0.3em] uppercase text-primary block mb-2">Current Project</span>
+          <span class="text-base font-extrabold tracking-tight uppercase">Monolith VII</span>
+          <span class="block text-xs text-on-surface-variant mt-1 font-medium">Zurich, 2025</span>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ════════════════════ SERVICES / TABS ════════════════════ -->
+  <section id="services" class="py-20 md:py-28 bg-surface" style="border-top: 1px solid rgba(186,186,176,0.12); border-bottom: 1px solid rgba(186,186,176,0.12);">
+    <div class="max-w-screen-2xl mx-auto px-6 md:px-12">
+
+      <!-- Header row -->
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-14 md:mb-20 gap-8 reveal">
+        <div>
+          <span class="text-[10px] font-black tracking-[0.35em] text-primary uppercase block mb-4">What We Do</span>
+          <h2 class="text-5xl md:text-7xl lg:text-8xl font-black uppercase tracking-tighter leading-none">Core<br/>Expertise</h2>
+        </div>
+
+        <!-- Tabs -->
+        <div class="flex space-x-6 md:space-x-10 overflow-x-auto pb-1" id="service-tabs">
+          <button data-tab="planning"      class="tab-btn active text-[10px] font-black tracking-widest uppercase whitespace-nowrap text-primary">Planning</button>
+          <button data-tab="construction"  class="tab-btn text-[10px] font-black tracking-widest uppercase whitespace-nowrap text-outline hover:text-primary">Construction</button>
+          <button data-tab="renovation"    class="tab-btn text-[10px] font-black tracking-widest uppercase whitespace-nowrap text-outline hover:text-primary">Renovation</button>
+          <button data-tab="consulting"    class="tab-btn text-[10px] font-black tracking-widest uppercase whitespace-nowrap text-outline hover:text-primary">Consulting</button>
+        </div>
+      </div>
+
+      <!-- Tab panels -->
+      <div>
+
+        <!-- Planning panel -->
+        <div class="tab-panel active" data-panel="planning">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-24 items-start">
+            <div class="space-y-10 reveal">
+              <div class="service-item group">
+                <span class="service-num text-sm font-black text-primary">01</span>
+                <h3 class="text-3xl md:text-4xl font-extrabold mt-3 tracking-tight">Site Analysis &amp; Feasibility</h3>
+                <p class="mt-3 text-on-surface-variant font-medium max-w-md leading-relaxed">Evaluating topographical nuances and environmental impact to anchor the structure perfectly into its context.</p>
+              </div>
+              <div class="service-item group">
+                <span class="service-num text-sm font-black text-primary">02</span>
+                <h3 class="text-3xl md:text-4xl font-extrabold mt-3 tracking-tight">Structural Engineering</h3>
+                <p class="mt-3 text-on-surface-variant font-medium max-w-md leading-relaxed">Utilizing high-performance materials to create gravity-defying spans and monolithic integrity.</p>
+              </div>
+              <div class="service-item group">
+                <span class="service-num text-sm font-black text-primary">03</span>
+                <h3 class="text-3xl md:text-4xl font-extrabold mt-3 tracking-tight">Interior Architecture</h3>
+                <p class="mt-3 text-on-surface-variant font-medium max-w-md leading-relaxed">Designing the inner void to breathe in harmony with the exterior massing and natural light.</p>
+              </div>
+            </div>
+            <div class="bg-primary-container p-10 md:p-14 aspect-square flex flex-col justify-center reveal reveal-d2">
+              <span class="text-7xl md:text-9xl text-primary/10 font-black italic leading-none">PURE</span>
+              <p class="text-2xl md:text-3xl font-extrabold mt-[-1.5rem] leading-tight text-on-surface tracking-tight uppercase">Architecture should speak of its time and place, but yearn for timelessness.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Construction panel -->
+        <div class="tab-panel" data-panel="construction">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-24 items-start">
+            <div class="space-y-10">
+              <div class="service-item group">
+                <span class="service-num text-sm font-black text-primary">01</span>
+                <h3 class="text-3xl md:text-4xl font-extrabold mt-3 tracking-tight">Foundation Systems</h3>
+                <p class="mt-3 text-on-surface-variant font-medium max-w-md leading-relaxed">Deep-pile and raft foundation solutions engineered for complex geological conditions.</p>
+              </div>
+              <div class="service-item group">
+                <span class="service-num text-sm font-black text-primary">02</span>
+                <h3 class="text-3xl md:text-4xl font-extrabold mt-3 tracking-tight">Raw Material Execution</h3>
+                <p class="mt-3 text-on-surface-variant font-medium max-w-md leading-relaxed">Working with exposed concrete, basalt, and reclaimed timber to achieve a monolithic finish.</p>
+              </div>
+              <div class="service-item group">
+                <span class="service-num text-sm font-black text-primary">03</span>
+                <h3 class="text-3xl md:text-4xl font-extrabold mt-3 tracking-tight">Glazing & Envelope</h3>
+                <p class="mt-3 text-on-surface-variant font-medium max-w-md leading-relaxed">Floor-to-ceiling glass systems that dissolve the boundary between interior and landscape.</p>
+              </div>
+            </div>
+            <div class="bg-surface-container-high p-10 md:p-14 aspect-square flex flex-col justify-center">
+              <span class="text-7xl md:text-9xl text-primary/10 font-black italic leading-none">MASS</span>
+              <p class="text-2xl md:text-3xl font-extrabold mt-[-1.5rem] leading-tight text-on-surface tracking-tight uppercase">Every material chosen with intention. Every detail built to last a century.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Renovation panel -->
+        <div class="tab-panel" data-panel="renovation">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-24 items-start">
+            <div class="space-y-10">
+              <div class="service-item group">
+                <span class="service-num text-sm font-black text-primary">01</span>
+                <h3 class="text-3xl md:text-4xl font-extrabold mt-3 tracking-tight">Heritage Restoration</h3>
+                <p class="mt-3 text-on-surface-variant font-medium max-w-md leading-relaxed">Preserving the character of existing structures while injecting contemporary spatial logic.</p>
+              </div>
+              <div class="service-item group">
+                <span class="service-num text-sm font-black text-primary">02</span>
+                <h3 class="text-3xl md:text-4xl font-extrabold mt-3 tracking-tight">Structural Adaptation</h3>
+                <p class="mt-3 text-on-surface-variant font-medium max-w-md leading-relaxed">Reinforcing and transforming ageing structures without compromising their historical soul.</p>
+              </div>
+              <div class="service-item group">
+                <span class="service-num text-sm font-black text-primary">03</span>
+                <h3 class="text-3xl md:text-4xl font-extrabold mt-3 tracking-tight">Modern Integration</h3>
+                <p class="mt-3 text-on-surface-variant font-medium max-w-md leading-relaxed">Seamlessly weaving smart systems and contemporary aesthetics into existing fabric.</p>
+              </div>
+            </div>
+            <div class="bg-surface-container-high p-10 md:p-14 aspect-square flex flex-col justify-center">
+              <span class="text-7xl md:text-9xl text-primary/10 font-black italic leading-none">TIME</span>
+              <p class="text-2xl md:text-3xl font-extrabold mt-[-1.5rem] leading-tight text-on-surface tracking-tight uppercase">The past is not erased. It is reframed and elevated.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Consulting panel -->
+        <div class="tab-panel" data-panel="consulting">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-24 items-start">
+            <div class="space-y-10">
+              <div class="service-item group">
+                <span class="service-num text-sm font-black text-primary">01</span>
+                <h3 class="text-3xl md:text-4xl font-extrabold mt-3 tracking-tight">Development Advisory</h3>
+                <p class="mt-3 text-on-surface-variant font-medium max-w-md leading-relaxed">Strategic land acquisition and development feasibility analysis for high-value portfolios.</p>
+              </div>
+              <div class="service-item group">
+                <span class="service-num text-sm font-black text-primary">02</span>
+                <h3 class="text-3xl md:text-4xl font-extrabold mt-3 tracking-tight">Regulatory Navigation</h3>
+                <p class="mt-3 text-on-surface-variant font-medium max-w-md leading-relaxed">Expert guidance through complex zoning, planning permissions, and compliance frameworks.</p>
+              </div>
+              <div class="service-item group">
+                <span class="service-num text-sm font-black text-primary">03</span>
+                <h3 class="text-3xl md:text-4xl font-extrabold mt-3 tracking-tight">Project Management</h3>
+                <p class="mt-3 text-on-surface-variant font-medium max-w-md leading-relaxed">End-to-end oversight ensuring every contractor, timeline, and budget aligns with the vision.</p>
+              </div>
+            </div>
+            <div class="bg-surface-container-high p-10 md:p-14 aspect-square flex flex-col justify-center">
+              <span class="text-7xl md:text-9xl text-primary/10 font-black italic leading-none">PLAN</span>
+              <p class="text-2xl md:text-3xl font-extrabold mt-[-1.5rem] leading-tight text-on-surface tracking-tight uppercase">Clarity of vision determines the quality of the outcome.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════ SELECTED WORKS ════════════════════ -->
+  <section id="portfolio" class="py-24 md:py-36 px-4 md:px-6 lg:px-8 bg-surface-container-low">
+
+    <div class="flex items-end justify-between mb-12 md:mb-16 px-2 md:px-4 reveal">
+      <div>
+        <span class="text-[10px] font-black tracking-[0.35em] text-primary uppercase block mb-4">Our Portfolio</span>
+        <h2 class="text-4xl md:text-5xl font-black uppercase tracking-tighter">Selected Works</h2>
+      </div>
+      <a href="#" class="flex items-center space-x-2 cursor-pointer hover:text-primary transition-colors group">
+        <span class="text-[10px] font-black tracking-widest uppercase border-b border-on-surface/20 pb-0.5 group-hover:border-primary transition-colors">Full Archive</span>
+        <span class="material-symbols-outlined text-sm">north_east</span>
+      </a>
+    </div>
+
+    <!-- Project grid — staggered widths -->
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-4 reveal reveal-d1">
+
+      <!-- Project 1 — large -->
+      <div class="project-card md:col-span-8 relative overflow-hidden h-[55vw] md:h-[520px] lg:h-[600px] cursor-pointer">
+        <img
+          class="w-full h-full object-cover"
+          src="/img/project1.jpg"
+          alt="Desert stone residence at golden hour"
+        />
+        <div class="overlay absolute inset-0 bg-black/25"></div>
+        <div class="absolute bottom-8 left-8 text-white z-10">
+          <span class="text-[9px] font-black tracking-[0.4em] uppercase opacity-70 block">Basalt Series</span>
+          <h4 class="text-3xl md:text-5xl font-extrabold mt-1 tracking-tighter uppercase">Villa Elektra</h4>
+          <div class="flex items-center space-x-4 mt-3">
+            <span class="bg-surface-container-highest/30 px-3 py-1 text-[9px] font-black tracking-widest uppercase">1150 M²</span>
+            <span class="bg-surface-container-highest/30 px-3 py-1 text-[9px] font-black tracking-widest uppercase">2025</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Project 2 — tall narrow -->
+      <div class="project-card md:col-span-4 relative overflow-hidden h-[55vw] md:h-[520px] lg:h-[600px] cursor-pointer">
+        <img
+          class="w-full h-full object-cover"
+          src="/img/project2.jpg"
+          alt="Architectural pavilion vertical"
+        />
+        <div class="overlay absolute inset-0 bg-black/25"></div>
+        <div class="absolute bottom-8 left-8 text-white z-10">
+          <span class="text-[9px] font-black tracking-[0.4em] uppercase opacity-70 block">The Void</span>
+          <h4 class="text-3xl md:text-4xl font-extrabold mt-1 tracking-tighter uppercase">K-Pavilion</h4>
+          <div class="flex items-center space-x-4 mt-3">
+            <span class="bg-surface-container-highest/30 px-3 py-1 text-[9px] font-black tracking-widest uppercase">620 M²</span>
+            <span class="bg-surface-container-highest/30 px-3 py-1 text-[9px] font-black tracking-widest uppercase">2024</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Project 3 — half -->
+      <div class="project-card md:col-span-5 relative overflow-hidden h-[55vw] md:h-[380px] lg:h-[440px] cursor-pointer">
+        <img
+          class="w-full h-full object-cover"
+          src="/img/project3.jpg"
+          alt="Modern minimalist house exterior"
+        />
+        <div class="overlay absolute inset-0 bg-black/25"></div>
+        <div class="absolute bottom-8 left-8 text-white z-10">
+          <span class="text-[9px] font-black tracking-[0.4em] uppercase opacity-70 block">Limestone</span>
+          <h4 class="text-2xl md:text-3xl font-extrabold mt-1 tracking-tighter uppercase">Casa Blanca IX</h4>
+        </div>
+      </div>
+
+      <!-- Project 4 — wider half -->
+      <div class="project-card md:col-span-7 relative overflow-hidden h-[55vw] md:h-[380px] lg:h-[440px] cursor-pointer">
+        <img
+          class="w-full h-full object-cover"
+          src="/img/project4.jpg"
+          alt="Glass and concrete tower at dusk"
+        />
+        <div class="overlay absolute inset-0 bg-black/25"></div>
+        <div class="absolute bottom-8 left-8 text-white z-10">
+          <span class="text-[9px] font-black tracking-[0.4em] uppercase opacity-70 block">Urban Monolith</span>
+          <h4 class="text-2xl md:text-3xl font-extrabold mt-1 tracking-tighter uppercase">Tower Nyx</h4>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ════════════════════ ADVANTAGES ════════════════════ -->
+  <section id="standards" class="py-24 md:py-36 px-6 md:px-16 lg:px-24 bg-surface flex flex-col items-center">
+
+    <div class="text-center mb-20 md:mb-28 reveal">
+      <span class="text-[10px] font-black tracking-[0.35em] text-primary uppercase block mb-4">Why SHEM</span>
+      <h2 class="text-4xl md:text-6xl lg:text-7xl font-black text-center uppercase tracking-tighter leading-none">Uncompromising<br class="hidden md:block"/> Standards</h2>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-16 lg:gap-24 w-full">
+
+      <div class="flex flex-col items-start reveal">
+        <span class="material-symbols-filled adv-icon text-primary mb-6">architecture</span>
+        <h3 class="font-black text-base tracking-widest uppercase mb-4">Structural Quality</h3>
+        <p class="text-on-surface-variant font-medium leading-relaxed text-sm md:text-base">Precision-engineered foundations using aerospace-grade material testing to ensure absolute longevity across generations.</p>
+      </div>
+
+      <div class="flex flex-col items-start reveal reveal-d2">
+        <span class="material-symbols-filled adv-icon text-primary mb-6">lightbulb</span>
+        <h3 class="font-black text-base tracking-widest uppercase mb-4">Process Innovation</h3>
+        <p class="text-on-surface-variant font-medium leading-relaxed text-sm md:text-base">Integrating smart-home monoliths and sustainable energy cores without compromising aesthetic purity or material truth.</p>
+      </div>
+
+      <div class="flex flex-col items-start reveal reveal-d4">
+        <span class="material-symbols-filled adv-icon text-primary mb-6">handshake</span>
+        <h3 class="font-black text-base tracking-widest uppercase mb-4">Total Reliability</h3>
+        <p class="text-on-surface-variant font-medium leading-relaxed text-sm md:text-base">Fixed-timeline execution backed by an architectural guarantee that spans decades. Zero surprises. Complete accountability.</p>
+      </div>
+
+    </div>
+
+    <!-- Progress Bar — Architectural Ruler -->
+    <div class="mt-24 md:mt-40 w-full max-w-4xl reveal">
+      <div class="flex justify-between mb-3 text-[9px] font-black tracking-[0.28em] uppercase text-outline">
+        <span>Phase I: Design</span>
+        <span>Phase II: Foundation</span>
+        <span>Phase III: Finishing</span>
+      </div>
+      <div class="h-4 bg-surface-container-highest w-full relative">
+        <div class="progress-fill absolute left-0 top-0 h-full bg-primary" id="progress-bar"></div>
+        <!-- Tick marks -->
+        <div class="absolute left-0 top-0 h-full w-full flex pointer-events-none">
+          <div style="left:33.33%; position:absolute; top:0; height:100%; width:1px; background:rgba(255,252,247,0.6)"></div>
+          <div style="left:66.66%; position:absolute; top:0; height:100%; width:1px; background:rgba(255,252,247,0.6)"></div>
+        </div>
+      </div>
+      <p class="mt-5 font-extrabold text-sm md:text-lg text-center uppercase tracking-widest">Current Benchmark: 65% Portfolio Efficiency</p>
+    </div>
+
+  </section>
+
+  <!-- ════════════════════ TESTIMONIAL ════════════════════ -->
+  <section class="py-20 md:py-28 px-6 md:px-16 lg:px-24 bg-surface-container-lowest" style="border-top:1px solid rgba(186,186,176,0.15)">
+    <div class="max-w-5xl mx-auto reveal">
+      <span class="text-[10px] font-black tracking-[0.35em] text-primary uppercase block mb-8">Client Perspective</span>
+      <blockquote class="text-3xl md:text-5xl font-extrabold leading-tight tracking-tight mb-10">
+        "SHEM didn't build us a house. They created a monument — a place where silence has architecture."
+      </blockquote>
+      <div class="flex items-center space-x-5">
+        <div class="w-12 h-12 bg-surface-container-highest overflow-hidden">
+          <img src="/img/client.jpg" class="w-full h-full object-cover" alt="Client"/>
+        </div>
+        <div>
+          <span class="block font-extrabold text-sm tracking-wide uppercase">Marcus Feld</span>
+          <span class="block text-[10px] font-black tracking-[0.25em] uppercase text-outline mt-0.5">Private Client, Zurich Estate 2024</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════ CONTACT ════════════════════ -->
+  <section id="contact" class="py-20 md:py-28 bg-primary">
+    <div class="max-w-screen-xl mx-auto px-6 md:px-12 grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-24">
+
+      <!-- Left: Text -->
+      <div class="text-on-primary reveal">
+        <span class="text-[10px] font-black tracking-[0.35em] uppercase text-on-primary/60 block mb-6">Start a Project</span>
+        <h2 class="text-4xl md:text-5xl lg:text-6xl font-black leading-[1.05] mb-8 uppercase tracking-tighter">
+          Begin your architectural narrative.
+        </h2>
+        <p class="text-lg md:text-xl font-medium text-on-primary/80 mb-12 leading-relaxed">
+          Every masterpiece begins with a conversation. Let us analyze your vision and transform it into a physical monolith.
+        </p>
+        <div class="space-y-5">
+          <div class="flex items-center space-x-5">
+            <span class="material-symbols-outlined">location_on</span>
+            <span class="font-black tracking-widest uppercase text-sm">Zurich · Dubai · London</span>
+          </div>
+          <div class="flex items-center space-x-5">
+            <span class="material-symbols-outlined">mail</span>
+            <span class="font-black tracking-widest uppercase text-sm">studio@shem.construction</span>
+          </div>
+          <div class="flex items-center space-x-5">
+            <span class="material-symbols-outlined">call</span>
+            <span class="font-black tracking-widest uppercase text-sm">+41 44 000 00 00</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Form -->
+      <div class="reveal reveal-d2">
+        <form class="space-y-10 bg-surface-container-lowest p-8 md:p-12" onsubmit="return false;">
+
+          <div>
+            <label class="text-[9px] font-black tracking-[0.32em] text-outline uppercase block mb-2">Full Name</label>
+            <input
+              type="text"
+              placeholder="Johnathan Doe"
+              class="w-full border-t-0 border-x-0 border-b-2 border-outline-variant bg-transparent py-3 focus:ring-0 focus:border-primary transition-all placeholder:text-outline-variant/50 font-medium text-sm"
+            />
+          </div>
+
+          <div>
+            <label class="text-[9px] font-black tracking-[0.32em] text-outline uppercase block mb-2">Phone Number</label>
+            <input
+              type="tel"
+              placeholder="+1 (555) 000-0000"
+              class="w-full border-t-0 border-x-0 border-b-2 border-outline-variant bg-transparent py-3 focus:ring-0 focus:border-primary transition-all placeholder:text-outline-variant/50 font-medium text-sm"
+            />
+          </div>
+
+          <div>
+            <label class="text-[9px] font-black tracking-[0.32em] text-outline uppercase block mb-2">Project Type</label>
+            <select class="w-full border-t-0 border-x-0 border-b-2 border-outline-variant bg-transparent py-3 focus:ring-0 focus:border-primary transition-all text-on-surface font-medium text-sm appearance-none cursor-pointer">
+              <option value="">Select a service</option>
+              <option>New Construction</option>
+              <option>Renovation</option>
+              <option>Planning & Design</option>
+              <option>Consulting</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="text-[9px] font-black tracking-[0.32em] text-outline uppercase block mb-2">Message</label>
+            <textarea
+              rows="3"
+              placeholder="Describe your vision..."
+              class="w-full border-t-0 border-x-0 border-b-2 border-outline-variant bg-transparent py-3 focus:ring-0 focus:border-primary transition-all placeholder:text-outline-variant/50 font-medium text-sm resize-none"
+            ></textarea>
+          </div>
+
+          <button
+            type="submit"
+            class="w-full bg-primary text-on-primary py-5 text-[10px] font-black tracking-[0.42em] uppercase hover:bg-on-surface transition-colors"
+          >
+            Request Consultation
+          </button>
+
+        </form>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ════════════════════ FOOTER ════════════════════ -->
+  <footer class="bg-surface-container-low">
+
+    <!-- Main footer grid -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-10 px-8 md:px-16 py-16 md:py-20">
+
+      <!-- Brand -->
+      <div class="col-span-2 md:col-span-1">
+        <div class="inter-black text-xl tracking-tighter uppercase text-on-surface mb-6">SHEM.</div>
+        <p class="text-xs font-medium leading-relaxed text-on-surface-variant max-w-[200px]">
+          Architectural monoliths for the contemporary era. Crafted with precision, driven by vision.
+        </p>
+        <!-- Social row -->
+        <div class="flex space-x-4 mt-6">
+          <a href="#" class="w-8 h-8 border border-outline-variant/20 flex items-center justify-center hover:border-primary hover:text-primary transition-colors">
+            <span class="text-[10px] font-black">IG</span>
+          </a>
+          <a href="#" class="w-8 h-8 border border-outline-variant/20 flex items-center justify-center hover:border-primary hover:text-primary transition-colors">
+            <span class="text-[10px] font-black">LI</span>
+          </a>
+          <a href="#" class="w-8 h-8 border border-outline-variant/20 flex items-center justify-center hover:border-primary hover:text-primary transition-colors">
+            <span class="text-[10px] font-black">BE</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Navigation -->
+      <div>
+        <h4 class="text-[9px] font-black tracking-widest text-on-surface uppercase mb-5">Navigation</h4>
+        <ul class="space-y-3">
+          <li><a href="#about"     class="text-[10px] font-bold text-on-surface-variant hover:text-primary transition-colors uppercase tracking-widest">Studio</a></li>
+          <li><a href="#services"  class="text-[10px] font-bold text-on-surface-variant hover:text-primary transition-colors uppercase tracking-widest">Services</a></li>
+          <li><a href="#portfolio" class="text-[10px] font-bold text-on-surface-variant hover:text-primary transition-colors uppercase tracking-widest">Portfolio</a></li>
+          <li><a href="#contact"   class="text-[10px] font-bold text-on-surface-variant hover:text-primary transition-colors uppercase tracking-widest">Contact</a></li>
+        </ul>
+      </div>
+
+      <!-- Legal -->
+      <div>
+        <h4 class="text-[9px] font-black tracking-widest text-on-surface uppercase mb-5">Legal</h4>
+        <ul class="space-y-3">
+          <li><a href="#" class="text-[10px] font-bold text-on-surface-variant hover:text-primary transition-colors uppercase tracking-widest">Privacy Policy</a></li>
+          <li><a href="#" class="text-[10px] font-bold text-on-surface-variant hover:text-primary transition-colors uppercase tracking-widest">Terms of Use</a></li>
+          <li><a href="#" class="text-[10px] font-bold text-on-surface-variant hover:text-primary transition-colors uppercase tracking-widest">Cookie Policy</a></li>
+        </ul>
+      </div>
+
+      <!-- Connect -->
+      <div>
+        <h4 class="text-[9px] font-black tracking-widest text-on-surface uppercase mb-5">Connect</h4>
+        <ul class="space-y-3">
+          <li><a href="#" class="text-[10px] font-bold text-on-surface-variant hover:text-primary transition-colors uppercase tracking-widest">Instagram</a></li>
+          <li><a href="#" class="text-[10px] font-bold text-on-surface-variant hover:text-primary transition-colors uppercase tracking-widest">LinkedIn</a></li>
+          <li><a href="#" class="text-[10px] font-bold text-on-surface-variant hover:text-primary transition-colors uppercase tracking-widest">Behance</a></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <!-- Bottom bar -->
+    <div class="border-t border-outline-variant/15 px-8 md:px-16 py-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
+      <p class="text-[9px] font-black tracking-[0.22em] text-outline uppercase">
+        © 2025 SHEM Construction. All Rights Reserved.
+      </p>
+      <p class="text-[9px] font-black tracking-[0.22em] text-outline uppercase">
+        Architecture · Engineering · Excellence
+      </p>
+    </div>
+
+  </footer>
+
+  <!-- ════════════════════ SCRIPTS ════════════════════ -->
+  <script>
+  // ── Nav scroll behaviour ──────────────────────────────────────────
+  const header    = document.getElementById('site-header');
+  const navInner  = document.getElementById('nav-inner');
+  const navLogo   = document.getElementById('nav-logo');
+  const navLinks  = document.querySelectorAll('.nav-link');
+  const burgerLines = document.querySelectorAll('.burger-line');
+
+  function updateNav() {
+    const scrolled = window.scrollY > 60;
+    if (scrolled) {
+      header.classList.add('glass-nav');
+      navLogo.classList.replace('text-white', 'text-on-surface');
+      navLinks.forEach(l => l.classList.replace('text-white', 'text-on-surface'));
+      burgerLines.forEach(l => l.classList.replace('bg-white', 'bg-on-surface'));
+    } else {
+      header.classList.remove('glass-nav');
+      navLogo.classList.replace('text-on-surface', 'text-white');
+      navLinks.forEach(l => l.classList.replace('text-on-surface', 'text-white'));
+      burgerLines.forEach(l => l.classList.replace('bg-on-surface', 'bg-white'));
+    }
+  }
+  window.addEventListener('scroll', updateNav, { passive: true });
+  updateNav();
+
+  // ── Mobile menu ───────────────────────────────────────────────────
+  const burgerBtn  = document.getElementById('burger-btn');
+  const mobileMenu = document.getElementById('mobile-menu');
+  let menuOpen = false;
+
+  function closeMobileMenu() {
+    menuOpen = false;
+    mobileMenu.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  burgerBtn.addEventListener('click', () => {
+    menuOpen = !menuOpen;
+    if (menuOpen) {
+      mobileMenu.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    } else {
+      closeMobileMenu();
+    }
+  });
+
+  // ── Tabs ──────────────────────────────────────────────────────────
+  const tabBtns   = document.querySelectorAll('.tab-btn');
+  const tabPanels = document.querySelectorAll('.tab-panel');
+
+  tabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.dataset.tab;
+
+      tabBtns.forEach(b => b.classList.remove('active', 'text-primary'));
+      tabBtns.forEach(b => b.classList.add('text-outline'));
+      btn.classList.add('active', 'text-primary');
+      btn.classList.remove('text-outline');
+
+      tabPanels.forEach(p => p.classList.remove('active'));
+      document.querySelector(`.tab-panel[data-panel="${target}"]`).classList.add('active');
+    });
+  });
+
+  // ── Intersection Observer: reveal & progress bar ──────────────────
+  const revealEls   = document.querySelectorAll('.reveal');
+  const progressBar = document.getElementById('progress-bar');
+
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+
+  revealEls.forEach(el => revealObserver.observe(el));
+
+  // Progress bar triggered separately
+  const progressObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        setTimeout(() => progressBar.classList.add('animated'), 300);
+        progressObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.5 });
+  progressObserver.observe(progressBar);
+  </script>
+
+</body>
+</html>

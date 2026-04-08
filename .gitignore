@@ -1,0 +1,12 @@
+# Screenshots (temporary files)
+screenshot-*.png
+
+# Node
+node_modules/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Claude internal
+.claude/

@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SHEM | Architectural Monolith</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@300;400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary": "#FF8C00", // Vibrant Orange Accent
+                    "primary-dim": "#e67e00",
+                    "on-primary": "#ffffff",
+                    "on-primary-fixed": "#403f3f",
+                    "primary-container": "#ffe8d1",
+                    "on-primary-fixed-variant": "#5c5b5b",
+                    "tertiary-container": "#fef2e2",
+                    "surface-container-low": "#fcf9f3",
+                    "on-error-container": "#752121",
+                    "on-tertiary": "#ffffff",
+                    "secondary-dim": "#595855",
+                    "tertiary": "#6b6357",
+                    "on-primary-container": "#525151",
+                    "error-container": "#fe8983",
+                    "on-surface": "#383831",
+                    "surface-container-highest": "#eae8de",
+                    "surface-container-lowest": "#ffffff",
+                    "secondary-container": "#e5e2dd",
+                    "primary-dim-old": "#535252",
+                    "surface-dim": "#e4e3d7",
+                    "tertiary-fixed": "#fef2e2",
+                    "primary-fixed-dim": "#d6d4d3",
+                    "secondary": "#656461",
+                    "on-secondary-container": "#52524e",
+                    "error": "#a64542",
+                    "outline": "#818178",
+                    "on-secondary": "#ffffff",
+                    "surface-variant": "#eae8de",
+                    "surface-container-high": "#f0eee5",
+                    "error-dim": "#4e0309",
+                    "on-tertiary-fixed": "#50493d",
+                    "on-tertiary-fixed-variant": "#6d6559",
+                    "outline-variant": "#babab0",
+                    "inverse-primary": "#ffffff",
+                    "inverse-surface": "#0e0e0c",
+                    "on-secondary-fixed-variant": "#5c5b58",
+                    "background": "#fffcf7",
+                    "secondary-fixed": "#e5e2dd",
+                    "surface-tint": "#FF8C00",
+                    "surface-bright": "#fffcf7",
+                    "inverse-on-surface": "#9e9d98",
+                    "tertiary-fixed-dim": "#efe4d4",
+                    "tertiary-dim": "#5f574c",
+                    "primary-fixed": "#e5e2e1",
+                    "on-error": "#ffffff",
+                    "surface-container": "#f6f4ec",
+                    "surface": "#fffcf7",
+                    "on-surface-variant": "#65655c",
+                    "on-background": "#383831",
+                    "on-secondary-fixed": "#403f3c",
+                    "secondary-fixed-dim": "#d7d4cf",
+                    "on-tertiary-container": "#625b4f"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0px",
+                    "lg": "0px",
+                    "xl": "0px",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Plus Jakarta Sans", "sans-serif"],
+                    "body": ["Plus Jakarta Sans", "sans-serif"],
+                    "label": ["Plus Jakarta Sans", "sans-serif"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .plus-jakarta { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .inter-black { font-family: 'Inter', sans-serif; font-weight: 900; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #fffcf7; }
+        ::-webkit-scrollbar-thumb { background: #FF8C00; }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body selection:bg-primary-container selection:text-on-primary-container">
+<!-- Header -->
+<header class="fixed top-0 w-full z-50 px-8 py-8 flex justify-between items-start pointer-events-none">
+<div class="inter-black text-[12vw] leading-none text-white tracking-tighter uppercase pointer-events-auto">SHEM.</div>
+<button class="plus-jakarta text-white text-lg font-extrabold tracking-widest uppercase flex items-center pointer-events-auto mt-4 hover:text-primary transition-colors">
+        + MENU
+    </button>
+</header>
+<!-- Hero Section -->
+<section class="relative h-screen w-full flex items-end justify-start overflow-hidden">
+<div class="absolute inset-0 z-0">
+<img class="w-full h-full object-cover grayscale-[10%] brightness-75" data-alt="Wide-angle exterior shot of a brutalist luxury villa with raw concrete walls, massive glass panels, and a sleek infinity pool at twilight." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDp7MzS1lLTsW4inQkOQEjgMwggTONJvaQpI9ND0_hCJKLmz92ZxU85UpGuOSbqFD1jNFmBOvdG1JLZPwuG-PNyuWzHGe3Gz3TBQ8sdpx_H_Rr7LPtJvrwT2Sj_8OmmbNvQIsYr3IgC11ITiMZBrJ0xvGS3DqKRnDCbPHOKZJOEV1XGNAAn71KVzMvRvm0a9fnUWWrTPrjGfWz9rBEHuIUoVv5hAADVvLkIrOpNYnhSQdQzzxvP9c3tpqv0-MBykBM_1GpbvNox0mk"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-60"></div>
+</div>
+<div class="relative z-10 px-8 md:px-24 pb-24 max-w-5xl">
+<p class="text-2xl md:text-4xl font-medium text-white max-w-2xl leading-tight">
+            Defining Contemporary Living through the lens of Architectural Monolithism.
+        </p>
+<div class="mt-10">
+<button class="bg-primary text-on-primary px-10 py-5 text-sm font-extrabold tracking-[0.2em] uppercase hover:bg-primary-dim transition-all group flex items-center">
+                Explore Our Vision
+                <span class="material-symbols-outlined ml-4 group-hover:translate-x-1 transition-transform">arrow_right_alt</span>
+</button>
+</div>
+</div>
+</section>
+<!-- About Section -->
+<section class="py-32 px-8 md:px-24 bg-surface-container-low grid grid-cols-1 md:grid-cols-12 gap-16 items-center">
+<div class="md:col-span-5">
+<span class="text-xs font-black tracking-[0.3em] text-primary uppercase block mb-8">The Philosophy</span>
+<h2 class="text-5xl md:text-6xl font-extrabold mb-10 leading-[1.1] tracking-tight">
+            Space is the final material of construction.
+        </h2>
+<p class="text-lg leading-relaxed text-on-surface-variant font-medium mb-8">
+            SHEM treats the digital and physical canvas not as flat surfaces, but as sites where light and mass interact. We move away from the ordinary, embracing asymmetric equilibrium and intentional voids.
+        </p>
+<div class="flex items-center space-x-4">
+<div class="h-[2px] w-12 bg-primary"></div>
+<span class="font-bold text-xl uppercase tracking-tighter">Founded 2012</span>
+</div>
+</div>
+<div class="md:col-span-7 aspect-[4/5] relative overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Detail shot of a minimalist concrete staircase inside a luxury home, dramatic natural light creating stark shadows and highlights." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDTZ9rm7i8gwqU268M5hNsUo_eXkf8h44AVj2lkUEMKG05ATA-6BJLFqbPkC3obojQDUpEn82ufT7QiRF_eYjtioPGiZslTxhoi1ZfE3t3NF8_zZYArs8DKJ-KAgAlrIVrSxPde4fKWfIReRZQq1b7wFu8v0AvttywE01jyJp3LdGkkllW-6aGdwC9Sm13ESqysr9Z-9COluQW0tRLGyuovfnJS3jOZWS8wydrI3f6ZnyzFpZkC60pT8hg0Cm_5GQcpzm_qcL7LNhs"/>
+</div>
+</section>
+<!-- Services/Tabs Section -->
+<section class="py-24 bg-surface border-y border-outline-variant/15">
+<div class="max-w-[1920px] mx-auto px-8">
+<div class="flex flex-col md:flex-row justify-between items-end mb-20">
+<div class="max-w-2xl">
+<h2 class="text-6xl md:text-8xl font-black uppercase tracking-tighter leading-none">Core Expertise</h2>
+</div>
+<div class="mt-8 md:mt-0 flex space-x-12 border-b-2 border-outline-variant/10 pb-4">
+<button class="text-xs font-black tracking-widest text-primary border-b-4 border-primary pb-4 uppercase">Planning</button>
+<button class="text-xs font-black tracking-widest text-outline hover:text-primary transition-colors pb-4 uppercase">Construction</button>
+<button class="text-xs font-black tracking-widest text-outline hover:text-primary transition-colors pb-4 uppercase">Renovation</button>
+<button class="text-xs font-black tracking-widest text-outline hover:text-primary transition-colors pb-4 uppercase">Consulting</button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-24 items-start">
+<div class="space-y-12">
+<div class="group cursor-pointer">
+<span class="text-sm font-black text-primary group-hover:text-primary-dim transition-colors">01</span>
+<h3 class="text-4xl font-extrabold mt-4 tracking-tight">Site Analysis &amp; Feasibility</h3>
+<p class="mt-4 text-on-surface-variant font-medium max-w-md leading-relaxed">Evaluating topographical nuances and environmental impact to anchor the structure perfectly into its context.</p>
+</div>
+<div class="group cursor-pointer">
+<span class="text-sm font-black text-primary group-hover:text-primary-dim transition-colors">02</span>
+<h3 class="text-4xl font-extrabold mt-4 tracking-tight">Structural Engineering</h3>
+<p class="mt-4 text-on-surface-variant font-medium max-w-md leading-relaxed">Utilizing high-performance materials to create gravity-defying spans and monolithic integrity.</p>
+</div>
+<div class="group cursor-pointer">
+<span class="text-sm font-black text-primary group-hover:text-primary-dim transition-colors">03</span>
+<h3 class="text-4xl font-extrabold mt-4 tracking-tight">Interior Architecture</h3>
+<p class="mt-4 text-on-surface-variant font-medium max-w-md leading-relaxed">Designing the inner void to breathe in harmony with the exterior massing.</p>
+</div>
+</div>
+<div class="bg-primary-container p-12 aspect-square flex flex-col justify-center">
+<span class="text-9xl text-primary/10 font-black italic">PURE</span>
+<p class="text-3xl font-extrabold mt-[-2rem] leading-tight text-on-surface tracking-tight uppercase">Architecture should speak of its time and place, but yearn for timelessness.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Portfolio Section -->
+<section class="py-32 px-4 md:px-8 bg-surface-container-low">
+<div class="flex items-center justify-between mb-16 px-4">
+<h2 class="text-5xl font-black uppercase tracking-tighter">Selected Works</h2>
+<div class="flex items-center space-x-4 cursor-pointer hover:text-primary transition-colors">
+<span class="text-xs font-black tracking-widest uppercase">Archive</span>
+<span class="material-symbols-outlined">north_east</span>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+<!-- Project 1 -->
+<div class="md:col-span-8 group relative overflow-hidden aspect-video md:aspect-auto h-[600px] cursor-pointer">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="Exterior view of a dark charcoal stone residence nestled in a desert landscape at golden hour." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBB1CxZMVKFUca--a-h18_ExoWH306xJJykjnFYlWXbrSi-bRU2LIzDcKuRqjG4rQNrtw3ye6kmWH9sFwT83AZqebh-J-NGtz-jM45KPV4aZ87pbm_UTzt1PzYGj2F2M9Dm-erg8w8ypA3aRBCTWzn06mPAgVKAR4OSIyM59x-zRwose5d6ZflPQIqJGkoHRwpRA_54RSeh-ClNjbsh9_WXhBr_4GYvqNRTJrVntbMSI1YCtB7u-XpfV2_uEtFyL6D8lGA2tJAuv58"/>
+<div class="absolute inset-0 bg-black/20 group-hover:bg-primary/30 transition-colors duration-500"></div>
+<div class="absolute bottom-10 left-10 text-white">
+<span class="text-[10px] font-black tracking-[0.4em] uppercase opacity-70">Basalt Series</span>
+<h4 class="text-5xl font-extrabold mt-2 tracking-tighter uppercase">Villa Elektra</h4>
+</div>
+</div>
+<!-- Project 2 -->
+<div class="md:col-span-4 group relative overflow-hidden h-[600px] cursor-pointer">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="Vertical shot of an architectural pavilion." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAOONVlPNbW7fF5lZ2rkrxUNaCNkFWfAhJ3nDWMxbUm6yM8Ae8VI3uyZ5AXhIlgiUfxnCtQNTrpbok_ghUogPniH6d_uBKba9eBSB9hqew97HC7fqltBrjoc17YAW67XesCqpU5FWFa2QkCRvnB8dnIAbamO91soK_axwCENxqEX90E-0adGGscTSMjZJDn2T3GIjO15pUaCo4jB9arwBmvyv_6orIWPxciD91djwltleBmkDJEJ7oXlT_e-THrhY6fUZ_MDipchdM"/>
+<div class="absolute inset-0 bg-black/20 group-hover:bg-primary/30 transition-colors duration-500"></div>
+<div class="absolute bottom-10 left-10 text-white">
+<span class="text-[10px] font-black tracking-[0.4em] uppercase opacity-70">The Void</span>
+<h4 class="text-5xl font-extrabold mt-2 tracking-tighter uppercase">K-Pavilion</h4>
+</div>
+</div>
+</div>
+</section>
+<!-- Advantages Section -->
+<section class="py-32 px-8 md:px-24 bg-surface flex flex-col items-center">
+<h2 class="text-5xl md:text-7xl font-black text-center uppercase tracking-tighter mb-24">Uncompromising Standards</h2>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-24 w-full">
+<div class="flex flex-col items-start">
+<span class="material-symbols-outlined text-5xl text-primary mb-8" data-weight="fill">architecture</span>
+<h3 class="font-black text-xl tracking-widest uppercase mb-6">Structural Quality</h3>
+<p class="text-on-surface-variant font-medium leading-relaxed">Precision-engineered foundations using aerospace-grade material testing to ensure absolute longevity.</p>
+</div>
+<div class="flex flex-col items-start">
+<span class="material-symbols-outlined text-5xl text-primary mb-8" data-weight="fill">lightbulb</span>
+<h3 class="font-black text-xl tracking-widest uppercase mb-6">Process Innovation</h3>
+<p class="text-on-surface-variant font-medium leading-relaxed">Integrating smart-home monoliths and sustainable energy cores without compromising aesthetic purity.</p>
+</div>
+<div class="flex flex-col items-start">
+<span class="material-symbols-outlined text-5xl text-primary mb-8" data-weight="fill">handshake</span>
+<h3 class="font-black text-xl tracking-widest uppercase mb-6">Total Reliability</h3>
+<p class="text-on-surface-variant font-medium leading-relaxed">Fixed-timeline execution backed by an architectural guarantee that spans generations.</p>
+</div>
+</div>
+<!-- Progress Bar -->
+<div class="mt-40 w-full max-w-4xl">
+<div class="flex justify-between mb-4 text-[10px] font-black tracking-[0.3em] uppercase text-outline">
+<span>Phase I: Design</span>
+<span>Phase II: Foundation</span>
+<span>Phase III: Finishing</span>
+</div>
+<div class="h-4 bg-surface-container-highest w-full relative">
+<div class="absolute left-0 top-0 h-full w-[65%] bg-primary"></div>
+</div>
+<p class="mt-6 font-extrabold text-lg text-center uppercase tracking-widest">Current Benchmark: 65% Portfolio Efficiency</p>
+</div>
+</section>
+<!-- Contact Section -->
+<section class="py-32 bg-primary">
+<div class="max-w-7xl mx-auto px-8 grid grid-cols-1 md:grid-cols-2 gap-24">
+<div class="text-on-primary">
+<h2 class="text-5xl md:text-6xl font-black leading-tight mb-8 uppercase tracking-tighter">Begin your architectural narrative.</h2>
+<p class="text-xl font-medium text-on-primary/80 mb-12">Every masterpiece begins with a conversation. Let us analyze your vision and transform it into a physical monolith.</p>
+<div class="space-y-6">
+<div class="flex items-center space-x-6">
+<span class="material-symbols-outlined">location_on</span>
+<span class="font-black tracking-widest uppercase text-sm">Zurich · Dubai · London</span>
+</div>
+<div class="flex items-center space-x-6">
+<span class="material-symbols-outlined">mail</span>
+<span class="font-black tracking-widest uppercase text-sm">studio@shem.construction</span>
+</div>
+</div>
+</div>
+<form class="space-y-12 bg-white p-12">
+<div class="group">
+<label class="text-[10px] font-black tracking-[0.3em] text-outline uppercase">Name</label>
+<input class="w-full border-t-0 border-x-0 border-b-2 border-outline-variant bg-transparent py-4 focus:ring-0 focus:border-primary transition-all placeholder:text-outline-variant/50 font-medium" placeholder="Johnathan Doe" type="text"/>
+</div>
+<div class="group">
+<label class="text-[10px] font-black tracking-[0.3em] text-outline uppercase">Phone Number</label>
+<input class="w-full border-t-0 border-x-0 border-b-2 border-outline-variant bg-transparent py-4 focus:ring-0 focus:border-primary transition-all placeholder:text-outline-variant/50 font-medium" placeholder="+1 (555) 000-0000" type="tel"/>
+</div>
+<button class="w-full bg-primary text-on-primary py-6 text-xs font-black tracking-[0.4em] uppercase hover:bg-black transition-all" type="submit">
+                Request Consultation
+            </button>
+</form>
+</div>
+</section>
+<!-- Footer -->
+<footer class="bg-stone-50 w-full border-t border-neutral-200">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-12 px-12 py-20 w-full">
+<div class="md:col-span-1">
+<div class="text-xl inter-black tracking-widest text-neutral-900 uppercase mb-8">SHEM</div>
+<p class="text-xs font-medium leading-relaxed text-neutral-500 max-w-[200px]">Architectural monoliths for the contemporary era. Crafted with precision, driven by vision.</p>
+</div>
+<div>
+<h4 class="text-xs font-black tracking-widest text-neutral-900 uppercase mb-6">Navigation</h4>
+<ul class="space-y-4">
+<li><a class="text-xs font-bold text-neutral-500 hover:text-primary transition-colors uppercase tracking-widest" href="#">Portfolio</a></li>
+<li><a class="text-xs font-bold text-neutral-500 hover:text-primary transition-colors uppercase tracking-widest" href="#">Studio</a></li>
+</ul>
+</div>
+<div>
+<h4 class="text-xs font-black tracking-widest text-neutral-900 uppercase mb-6">Legal</h4>
+<ul class="space-y-4">
+<li><a class="text-xs font-bold text-neutral-500 hover:text-primary transition-colors uppercase tracking-widest" href="#">Privacy Policy</a></li>
+</ul>
+</div>
+<div>
+<h4 class="text-xs font-black tracking-widest text-neutral-900 uppercase mb-6">Connect</h4>
+<ul class="space-y-4">
+<li><a class="text-xs font-bold text-neutral-500 hover:text-primary transition-colors uppercase tracking-widest" href="#">Instagram</a></li>
+</ul>
+</div>
+</div>
+<div class="px-12 pb-12">
+<p class="text-[10px] font-black tracking-[0.2em] text-neutral-400 uppercase">
+            © 2024 SHEM CONSTRUCTION. ALL RIGHTS RESERVED.
+        </p>
+</div>
+</footer>
+</body></html>
