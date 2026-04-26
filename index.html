@@ -237,8 +237,8 @@
         </a>
         <!-- Burger (mobile) -->
         <button id="burger-btn" class="relative flex flex-col justify-center items-center w-8 h-8 z-50" aria-label="Toggle menu">
-          <span id="burger-top"    class="block absolute h-[2px] w-7 bg-white transition-all duration-300 origin-center" style="transform: translateY(-5px)"></span>
-          <span id="burger-bottom" class="block absolute h-[2px] w-5 bg-white transition-all duration-300 origin-center" style="transform: translateY(5px)"></span>
+          <span id="burger-top"    class="burger-line block absolute h-[2px] w-7 bg-white transition-all duration-300 origin-center" style="transform: translateY(-5px)"></span>
+          <span id="burger-bottom" class="burger-line block absolute h-[2px] w-5 bg-white transition-all duration-300 origin-center" style="transform: translateY(5px)"></span>
         </button>
       </div>
 
@@ -859,11 +859,18 @@
       burgerTop.style.width        = '28px';
       burgerBottom.style.transform = 'translateY(0) rotate(-45deg)';
       burgerBottom.style.width     = '28px';
+      // Menu background is light — force dark colour so × is visible
+      burgerTop.style.backgroundColor    = '#383831';
+      burgerBottom.style.backgroundColor = '#383831';
     } else {
       burgerTop.style.transform    = 'translateY(-5px) rotate(0deg)';
       burgerTop.style.width        = '28px';
       burgerBottom.style.transform = 'translateY(5px) rotate(0deg)';
       burgerBottom.style.width     = '20px';
+      // Restore colour based on current scroll position
+      burgerTop.style.backgroundColor    = '';
+      burgerBottom.style.backgroundColor = '';
+      updateNav();
     }
   }
 
