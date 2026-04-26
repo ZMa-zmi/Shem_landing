@@ -208,6 +208,11 @@
     .service-item { cursor: pointer; }
     .service-item:hover .service-num { color: #e67e00; }
     .service-item .service-num { transition: color .2s; }
+
+    /* ── Hide cursor on touch/mobile devices ── */
+    @media (pointer: coarse) {
+      *, *::before, *::after { cursor: none !important; }
+    }
   </style>
 </head>
 
